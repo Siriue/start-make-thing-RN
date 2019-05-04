@@ -21,8 +21,10 @@
                 <el-table-column prop="carInfo" label="拥有车辆"></el-table-column>
                 <el-table-column prop="comment" label="备注"></el-table-column>
                 <el-table-column label="操作">
-                    <el-button type="primary" size="mini">修改</el-button>
-                    <el-button type="danger" size="mini">删除</el-button>
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="mini">修改</el-button>
+                        <el-button type="danger" size="mini" @click="deleteUser(scope.row)">删除</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </div>
@@ -54,11 +56,7 @@
 <script>
     export default {
         created() {
-            this.axios.get("/api/user").then((response) => {
-                if (response.data && response.data !== "") {
-                    this.formatResponse(response.data);
-                }
-            })
+            this.getUserList();
         },
         mounted() {
 
@@ -81,8 +79,34 @@
                 })
                 this.userList = res;
             },
+
+            getUserList() {
+                this.axios.get("/api/user").then((response) => {
+                    if (response.data && response.data !== "") {
+                        this.formatResponse(response.data);
+                    }
+                })
+            },
+
             goToUserAdd() {
                 this.$router.push("userAdd");
+            },
+
+            deleteUser(user) {
+                this.axios.post("/api/user/delete",{userId: user.userId}).then(res => {
+                    this.$message({
+                        type : "success",
+                        message: "删除成功"
+                    })
+                    console.log(res);
+                    this.getUserList();
+                }).catch(e => {
+                    console.log(e);
+                    this.$message({
+                        type : "error",
+                        message: "删除失败"
+                    })
+                })
             }
         }
     }
