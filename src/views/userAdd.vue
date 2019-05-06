@@ -22,7 +22,7 @@
                     <el-input v-model="userForm.comment"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="add">添加</el-button>
+                    <el-button type="primary" @click="addOrModify">{{this.dataTransfer ? "修改" : "添加"}}</el-button>
                     <el-button @click="goToLast">返回</el-button>
                 </el-form-item>
             </el-form>
@@ -48,6 +48,15 @@
     export default {
         name: "userAdd",
         created() {
+            this.dataTransfer = this.$store.state.dataTransfer;
+            if (this.dataTransfer) {
+                this.userForm.userName = this.dataTransfer.userName;
+                this.userForm.sex = this.dataTransfer.sex;
+                this.userForm.birthday = this.dataTransfer.birthday;
+                this.userForm.tel = this.dataTransfer.tel;
+                this.userForm.comment = this.dataTransfer.comment;
+                this.$store.state.dataTransfer = null;
+            }
         },
 
         mounted() {
@@ -61,7 +70,8 @@
                     birthday: null,
                     tel: null,
                     comment: null,
-                }
+                },
+                dataTransfer: null,
             }
         },
 
@@ -69,17 +79,39 @@
             goToLast() {
                 this.$router.back();
             },
-            add() {
-                this.axios.post("/api/user/add",this.userForm).then(res => {
-                    console.log(res);
-                    this.$router.back();
-                }).catch(err => {
-                    console.log(err);
-                    this.$message({
-                        type: "error",
-                        message: "添加失败！"
+            addOrModify() {
+                if (!this.dataTransfer) {
+                    this.axios.post("/api/user/add",this.userForm).then(res => {
+                        console.log(res);
+                        this.$message({
+                            type: "success",
+                            message: "添加成功！"
+                        });
+                        this.$router.back();
+                    }).catch(err => {
+                        console.log(err);
+                        this.$message({
+                            type: "error",
+                            message: "添加失败！"
+                        })
                     })
-                })
+                } else {
+                    this.userForm.userId = this.dataTransfer.userId;
+                    this.axios.post("/api/user/update",this.userForm).then(res => {
+                        console.log(res);
+                        this.$message({
+                            type: "success",
+                            message: "修改成功！"
+                        });
+                        this.$router.back();
+                    }).catch(err => {
+                        console.log(err);
+                        this.$message({
+                            type: "error",
+                            message: "修改失败！"
+                        });
+                    })
+                }
             }
         }
     }

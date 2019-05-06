@@ -5,10 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-
+    dataTransfer: null
   },
   mutations: {
-
+    dataTransfer(state, dataTransfer) {
+      state.dataTransfer = dataTransfer;
+    }
   },
   actions: {
 

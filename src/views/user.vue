@@ -22,7 +22,7 @@
                 <el-table-column prop="comment" label="备注"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button type="primary" size="mini">修改</el-button>
+                        <el-button type="primary" size="mini" @click="handleModify(scope.row)">修改</el-button>
                         <el-button type="danger" size="mini" @click="deleteUser(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
@@ -107,6 +107,11 @@
                         message: "删除失败"
                     })
                 })
+            },
+
+            handleModify(row) {
+                this.$store.commit("dataTransfer", row);
+                this.$router.push("userAdd");
             }
         }
     }
